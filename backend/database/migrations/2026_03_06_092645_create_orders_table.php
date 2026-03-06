@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('order_id');
             $table->foreignId('service_id')->constrained('services', 'service_id')->cascadeOnDelete();
             $table->foreignId('buyer_id')->constrained('users', 'user_id')->cascadeOnDelete();
-            $table->foreignId('booster_id')->constrained('users', 'user_id')->cascadeOnDelete();
+            $table->foreignId('booster_id')->constrained('users', 'user_id')->cascadeOnDelete()->nullable();
             
             $table->string('rank_from');
             $table->string('rank_to');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('price', 8, 2);
 
             $table->string('status')->default('pending');
-            
+
             $table->timestamps();
         });
     }
