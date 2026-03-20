@@ -59,7 +59,7 @@ export default function Navigacio() {
                     ) : (
                         <NavLink to="/bejelentkezes">
                             <button className="btn btn-login">
-                                <i className="fa-solid fa-user"></i> Log in
+                                <i className="fa-solid fa-user"></i>
                             </button>
                         </NavLink>
                     )}

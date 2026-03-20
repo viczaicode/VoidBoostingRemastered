@@ -114,7 +114,7 @@ export default function Registration() {
                             />
                         </div>
 
-                        {(error || errors) && (
+                        {(error || errors ) && (
                             <div className="error-message">
                                 <i className="fas fa-exclamation-circle"></i>
                                 {error || "An error occurred during registration."}
