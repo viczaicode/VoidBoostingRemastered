@@ -575,79 +575,354 @@ footer {
 }
 
 /* AUTH FORMS (LOGIN / REGISTRATION) */
-.login-page {
-  margin-top: 60px;
+.auth-page {
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  color: var(--text);
+  justify-content: center;
+  background: linear-gradient(135deg, #0f0d18 0%, #1a1630 50%, #0f0d18 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-.login-page h2 {
-  margin-bottom: 24px;
-  font-size: 26px;
+.auth-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(121, 104, 198, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(121, 104, 198, 0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
 
-.login-form {
+.auth-container {
   width: 100%;
-  max-width: 420px;
-  padding: 24px 28px;
-  border-radius: 12px;
-  border: 1px solid rgba(121, 104, 198, 0.35);
-  background: radial-gradient(circle at top left, #1a1630 0, #0f0d18 55%);
-  box-shadow: 0 18px 45px rgba(15, 13, 24, 0.85);
+  max-width: 500px;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-card {
+  background: linear-gradient(135deg, rgba(26, 22, 48, 0.9), rgba(15, 13, 24, 0.9));
+  border: 1px solid rgba(121, 104, 198, 0.2);
+  border-radius: 24px;
+  padding: 40px 30px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3),
+              0 0 100px rgba(121, 104, 198, 0.1);
+  transition: all 0.3s ease;
+}
+
+.auth-card:hover {
+  border-color: rgba(121, 104, 198, 0.4);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4),
+              0 0 120px rgba(121, 104, 198, 0.15);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.auth-logo {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 25px;
+  background: linear-gradient(135deg, var(--accent), #5a4dd1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: white;
+  box-shadow: 0 15px 35px rgba(121, 104, 198, 0.3);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.auth-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--text), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-header p {
+  color: var(--primary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.auth-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 25px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 14px;
-  color: var(--primary);
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.form-group label i {
+  color: var(--accent);
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
 }
 
 .form-group input {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--secondary);
-  background-color: #05030d;
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(121, 104, 198, 0.2);
+  background: rgba(15, 13, 24, 0.6);
   color: var(--text);
+  font-size: 16px;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.form-group input::placeholder {
+  color: rgba(163, 153, 206, 0.5);
 }
 
 .form-group input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(121, 104, 198, 0.5);
-  background-color: #090718;
+  background: rgba(15, 13, 24, 0.8);
+  box-shadow: 0 0 0 3px rgba(121, 104, 198, 0.1),
+              0 10px 25px rgba(121, 104, 198, 0.15);
+  transform: translateY(-2px);
 }
 
 .error-message {
-  background-color: rgba(248, 113, 113, 0.08);
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.1), rgba(239, 68, 68, 0.1));
   border: 1px solid rgba(248, 113, 113, 0.3);
   color: #fecaca;
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-}
-
-.login-page p {
-  color: var(--primary);
+  padding: 15px 20px;
+  border-radius: 12px;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(10px);
 }
 
+.error-message i {
+  color: #f87171;
+  font-size: 1.1rem;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(121, 104, 198, 0.2);
+}
+
+.auth-divider span {
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0 10px;
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-footer {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.auth-footer p {
+  color: var(--primary);
+  font-size: 0.9rem;
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.auth-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.auth-link:hover {
+  color: #5a4dd1;
+  text-decoration: underline;
+}
+
+/* Updated Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #5a4dd1);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(121, 104, 198, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 2px solid rgba(121, 104, 198, 0.3);
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.btn-secondary:hover {
+  background: rgba(121, 104, 198, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(121, 104, 198, 0.2);
+}
+
+/* Enhanced Navbar */
+.navbar {
+  background: linear-gradient(135deg, rgba(15, 13, 24, 0.95), rgba(26, 22, 48, 0.95));
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(121, 104, 198, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 20px;
+}
+
+.nav-center ul {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-center a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-center a:hover {
+  background: rgba(121, 104, 198, 0.1);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.nav-center a.active {
+  background: var(--accent);
+  color: white;
+}
 
 .bejelentkezettFelhasznaloNev {
-  font-size: 15px;
-  font-weight: bold;
-  color: white;
-  max-width: 500px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 8px 16px;
+  background: rgba(121, 104, 198, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(121, 104, 198, 0.3);
+}
+
+/* Responsive Auth */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 10px;
+  }
+  
+  .auth-card {
+    padding: 30px 20px;
+  }
+  
+  .auth-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .form-group input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .btn-primary, .btn-secondary {
+    font-size: 16px;
+  }
 }
 
 /* MAIN PAGE */ /* MAIN PAGE */ /* MAIN PAGE */ /* MAIN PAGE */ /* MAIN PAGE */ /* MAIN PAGE */ /* MAIN PAGE */ /* MAIN PAGE */ /* MAIN PAGE */ 
