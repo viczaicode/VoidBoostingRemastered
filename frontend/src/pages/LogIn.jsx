@@ -1,92 +1,74 @@
-import React from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import useAuthContext from "../contexts/AuthContext";
 
 export default function LogIn() {
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const { loginReg, errors } = useAuthContext("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        //bejelentkezés
-        //Összegyűjtjük egyetlen objektumban az űrlap adatokat
-        const adat = {
-            email: email,
-            password: password,
-        };
+        setSubmitting(true);
+        setError("");
 
-         loginReg(adat,"/login");
-        
+        try {
+            const adat = {
+                email: email,
+                password: password,
+            };
+            
+            await loginReg(adat, "/login");
+            navigate("/");
+        } catch (err) {
+            setError("Hibás e-mail vagy jelszó.");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
-        <div className="m-auto" style={{ maxWidth: "400px" }}>
-            <h1 className="text-center">Bejelentkezés</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3 mt-3">
-                    <label htmlFor="email" className="form-label">
-                        Email:
-                    </label>
+        <div className="login-page">
+            <h2>Log in</h2>
+            <form className="login-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label htmlFor="email">E-mail</label>
                     <input
-                        type="email"
-
-                        // value beállítása a state értékére
-                        value={email}
-                        // state értékének módosításváltozik a beviteli mező tartalma
-                        onChange={(e) => {
-                            setEmail(e.target.value);
-                        }}
-
-                        className="form-control"
                         id="email"
-                        placeholder="email"
-                        name="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
                     />
                 </div>
-                <div>
-                    <span className="text-danger">hiba</span>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="pwd" className="form-label">
-                        Jelszó:
-                    </label>
+
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
                     <input
+                        id="password"
                         type="password"
-
-                        // value beállítása a state értékére
                         value={password}
-                        // state értékének módosításváltozik a beviteli mező tartalma
-                        onChange={(e) => {
-                            setPassword(e.target.value);
-                        }}
-
-                        className="form-control"
-                        id="pwd"
-                        placeholder="jelszó"
-                        name="pwd"
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
                     />
-                    <div>
-                        <span className="text-danger">hiba</span>
-                    </div>
                 </div>
 
-                <div className=" text-center">
-                    <button type="submit" className="btn btn-primary w-100">
-                        Login
-                    </button>
+                {(error || errors) && <div className="error-message">{error || "Hiba történt a bejelentkezés során."}</div>}
 
-                    <p>
-                        Még nincs felhaszálóneve?
-                        <Link className="nav-link text-info" to="/regisztracio">
-                            Regisztráció
-                        </Link>
-                    </p>
-                </div>
+                <button className="btn btn-login" type="submit" disabled={submitting}>
+                    {submitting ? "Bejelentkezés..." : "Log in"}
+                </button>
             </form>
+            <p>
+                Don't have an account yet?{" "}
+                <Link to="/regisztracio" style={{ color: "#7968c6" }}>
+                    Register here.
+                </Link>
+            </p>
         </div>
     );
 }

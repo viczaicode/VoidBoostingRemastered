@@ -1,102 +1,106 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuthContext from "../contexts/AuthContext";
 
 export default function Registration() {
-
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordAgain, setPasswordAgain] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    
     const { loginReg, errors } = useAuthContext();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
+        setError("");
 
-        if(password !== passwordAgain){
-            alert("A jelszavak nem egyeznek!");
+        if (password !== passwordAgain) {
+            setError("A jelszavak nem egyeznek!");
+            setSubmitting(false);
             return;
         }
         
-        //Összegyűjtjük egyetlen objektumban az űrlap adatokat
-        const adat = { 
-            email: email,
-            // A backend validáció `nickname` mezőt vár
-            nickname: username,
-            // A backend controller viszont `$request->name`-et használ a create-nél,
-            // ezért ezt is adjuk meg ugyanazzal az értékkel.
-            //name: username,
-            password: password,
-            password_confirmation: passwordAgain
-        };
+        try {
+            const adat = { 
+                email: email,
+                nickname: username,
+                password: password,
+                password_confirmation: passwordAgain
+            };
 
-        // regisztráció kezelése
-        loginReg(adat, "/register");
-    }
+            await loginReg(adat, "/register");
+            navigate("/bejelentkezes");
+        } catch (err) {
+            setError("A regisztráció nem sikerült. Ellenőrizd az adatokat.");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
-        <div className="m-auto" style={{ maxWidth: "400px" }}>
-            <h1 className="text-center">Regisztráció</h1>
-            <form onSubmit={handleSubmit}>
-
-                <div className="mb-3 mt-3">
-                    <label className="form-label">Felhasználónév:</label>
+        <div className="login-page">
+            <h2>Registration</h2>
+            <form className="login-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label htmlFor="name">Username</label>
                     <input
+                        id="name"
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="form-control"
-                        placeholder="felhasználónév"
+                        required
                     />
                 </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Email:</label>
+                <div className="form-group">
+                    <label htmlFor="email">E-mail</label>
                     <input
+                        id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="form-control"
-                        placeholder="email"
+                        required
                     />
                 </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Jelszó:</label>
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
                     <input
+                        id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="form-control"
-                        placeholder="jelszó"
+                        required
                     />
                 </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Jelszó újra:</label>
+                <div className="form-group">
+                    <label htmlFor="password_confirmation">Confirm Password</label>
                     <input
+                        id="password_confirmation"
                         type="password"
                         value={passwordAgain}
                         onChange={(e) => setPasswordAgain(e.target.value)}
-                        className="form-control"
-                        placeholder="jelszó újra"
+                        required
                     />
                 </div>
 
-                <div className="text-center">
-                    <button type="submit" className="btn btn-success w-100">
-                        Regisztráció
-                    </button>
+                {(error || errors) && <div className="error-message">{error || "Hiba történt a regisztráció során."}</div>}
 
-                    <p className="mt-2">
-                        Már van fiókod?
-                        <Link className="nav-link text-info" to="/">
-                            Bejelentkezés
-                        </Link>
-                    </p>
-                </div>
-
+                <button className="btn btn-login" type="submit" disabled={submitting}>
+                    {submitting ? "Registering.." : "Register"}
+                </button>
             </form>
+            <p>
+                Already have an account?{" "}
+                <Link to="/bejelentkezes" style={{ color: "#7968c6" }}>
+                    Log in here.
+                </Link>
+            </p>
         </div>
     );
 }
