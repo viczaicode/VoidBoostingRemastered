@@ -7,12 +7,27 @@ export default function Navigacio() {
     const { user, logout } = useAuthContext();
 
     return (
-        <nav className="navbar navbar-expand-sm bg-light">
-            <div className="container-fluid">
+        <nav className="navbar">
+            <div className="header-container">
                 <ul className="navbar-nav">
                     <li className="navbar-item">
                         <Link className="nav-link" to="/">
-                            Kezdőlap
+                            HomePage
+                        </Link>
+                    </li>
+                    <li className="navbar-item">
+                        <Link className="nav-link" to="/services">
+                            Services
+                        </Link>
+                    </li>
+                    <li className="navbar-item">
+                        <Link className="nav-link" to="/aboutus">
+                            About us
+                        </Link>
+                    </li>
+                    <li className="navbar-item">
+                        <Link className="nav-link" to="/support">
+                            Support
                         </Link>
                     </li>
                     {user ? (
