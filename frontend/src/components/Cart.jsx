@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import useAuthContext from '../contexts/AuthContext';
-import axios from 'axios';
+import { myAxios } from '../api/axios';
 
 export default function Cart() {
   const { items, removeFromCart, clearCart, getTotalPrice } = useCart();
@@ -35,13 +35,13 @@ export default function Cart() {
 
     try {
       const orderPromises = items.map(async (item) => {
+        const resolvedServiceId = item.serviceId || (item.orderType?.includes('Above') ? 2 : 1);
+
         const orderData = {
-          service_id: item.serviceId || 1, // Default service ID
-          buyer_id: user.id,
-          booster_id: null, // Will be assigned by admin
+          service_id: resolvedServiceId,
           rank_from: item.currentRank,
           rank_to: item.desiredRank,
-          price: item.totalPrice,
+          price: parseFloat(item.totalPrice),
           order_details: {
             type: item.orderType,
             server: item.server,
@@ -58,12 +58,7 @@ export default function Cart() {
           }
         };
 
-        const response = await axios.post('/api/orders', orderData, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const response = await myAxios.post('/api/orders', orderData);
 
         return response.data;
       });
@@ -75,7 +70,7 @@ export default function Cart() {
       navigate('/services');
     } catch (err) {
       console.error('Order submission error:', err);
-      setError(err.response?.data?.message || 'Failed to submit orders. Please try again.');
+      setError(err.response?.data?.message || 'Failed to submit orders. Please check your session and try again.');
     } finally {
       setSubmitting(false);
     }

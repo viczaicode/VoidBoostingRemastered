@@ -1,14 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../logo.png";
 import useAuthContext from "../contexts/AuthContext";
+import { useCart } from "../contexts/CartContext";
 
 export default function Navigacio() {
     const { user, logout } = useAuthContext();
+    const { getItemCount } = useCart();
     const navigate = useNavigate();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    function closeMobileMenu() {
+        setMobileMenuOpen(false);
+    }
+
+    function handleNavigate(path) {
+        navigate(path);
+        closeMobileMenu();
+    }
+
+    function handleTrustpilot() {
+        window.open("https://www.trustpilot.com/", "_blank", "noopener,noreferrer");
+        closeMobileMenu();
+    }
 
     async function handleLogout() {
         await logout();
+        closeMobileMenu();
         navigate("/");
     }
 
@@ -21,47 +39,63 @@ export default function Navigacio() {
                     </NavLink>
                 </div>
 
-                <nav className="nav-center">
+                <button
+                    type="button"
+                    className="mobile-menu-toggle"
+                    aria-label="Toggle navigation"
+                    aria-expanded={mobileMenuOpen}
+                    onClick={() => setMobileMenuOpen((prev) => !prev)}
+                >
+                    <i className={mobileMenuOpen ? "fa-solid fa-xmark" : "fa-solid fa-bars"}></i>
+                </button>
+
+                <nav className={`nav-center ${mobileMenuOpen ? "is-open" : ""}`}>
                     <ul>
                         <li>
-                            <NavLink to="/" end>
+                            <NavLink to="/" end onClick={closeMobileMenu}>
                                 Homepage
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to="/services">Services</NavLink>
+                            <NavLink to="/services" onClick={closeMobileMenu}>Services</NavLink>
                         </li>
                         <li>
-                            <NavLink to="/aboutus">About us</NavLink>
+                            <NavLink to="/aboutus" onClick={closeMobileMenu}>About us</NavLink>
                         </li>
-                        <li>
-                            <NavLink to="/support">Support</NavLink>
-                        </li>
+                        
+                        {user?.role >= 1 && (
+                            <li>
+                                <NavLink to="/booster-panel" onClick={closeMobileMenu}>Booster Panel</NavLink>
+                            </li>
+                        )}
+                        {user?.role === 2 && (
+                            <li>
+                                <NavLink to="/admin-panel" onClick={closeMobileMenu}>Admin Panel</NavLink>
+                            </li>
+                        )}
                     </ul>
                 </nav>
 
                 <div className="nav-right">
-                    <button className="btn btn-trustpilot">
+                    <button type="button" className="btn btn-trustpilot" onClick={handleTrustpilot}>
                         <i className="fa-solid fa-star"></i> Trustpilot
                     </button>
-                    <button className="btn btn-cart">
+                    <button type="button" className="btn btn-cart" onClick={() => handleNavigate("/cart")}>
                         <i className="fa-solid fa-shopping-cart"></i> Cart
-                        <span className="cart-count">0</span>
+                        <span className="cart-count">{getItemCount()}</span>
                     </button>
 
                     {user ? (
                         <>
                             <span className="bejelentkezettFelhasznaloNev">{user?.nickname}</span>
-                            <button className="btn btn-login" onClick={handleLogout}>
+                            <button type="button" className="btn btn-login" onClick={handleLogout}>
                                 Log out
                             </button>
                         </>
                     ) : (
-                        <NavLink to="/bejelentkezes">
-                            <button className="btn btn-login">
-                                <i className="fa-solid fa-user"></i>
-                            </button>
-                        </NavLink>
+                        <button type="button" className="btn btn-login" onClick={() => handleNavigate("/bejelentkezes")}>
+                            <i className="fa-solid fa-user"></i> Log in
+                        </button>
                     )}
                 </div>
             </div>

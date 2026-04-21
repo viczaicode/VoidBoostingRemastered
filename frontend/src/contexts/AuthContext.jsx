@@ -1,12 +1,11 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { myAxios } from "../api/axios";
-import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -17,44 +16,52 @@ export const AuthProvider = ({ children }) => {
 
   //bejelentkezett felhasználó adatainak lekérdezése
   const getUser = async () => {
-    const { data } = await myAxios.get("/api/user");
-    console.log(data)
-    setUser(data);
+    try {
+      const { data } = await myAxios.get("/api/user");
+      setUser(data);
+      return data;
+    } catch (error) {
+      setUser(null);
+      return null;
+    }
   };
+
   const logout = async () => {
     await csrf();
 
-    myAxios.post("/logout").then((resp) => {
+    myAxios.post("/logout").then(() => {
       setUser(null);
-      console.log(resp);
     });
   };
 
   const loginReg = async ({ ...adat }, vegpont) => {
     //lekérjük a csrf tokent
     await csrf();
-    console.log(adat,vegpont);
+    setErrors({
+      name: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
+    });
 
     try {
       await myAxios.post(vegpont, adat);
-      console.log("siker");
-      //sikeres bejelentkezés/regisztráció esetén
-      //Lekérdezzük a usert
-      //await getUser();
-      //elmegyünk  a kezdőlapra
-      getUser()
-      navigate("/");
-      
+      await getUser();
     } catch (error) {
-      console.log(error);
-      if (error.response.status === 422) {
+      if (error?.response?.status === 422) {
         setErrors(error.response.data.errors);
       }
+
+      throw error;
     }
   };
 
+  useEffect(() => {
+    getUser().finally(() => setAuthLoading(false));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ logout, loginReg, errors, getUser, user }}>
+    <AuthContext.Provider value={{ logout, loginReg, errors, getUser, user, authLoading }}>
       {children}
     </AuthContext.Provider>
   );

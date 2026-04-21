@@ -1,6 +1,23 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useEffect, useReducer } from 'react';
 
 const CartContext = createContext();
+const CART_STORAGE_KEY = 'voidboosting_cart';
+
+const getInitialCartState = () => {
+  try {
+    const storedItems = localStorage.getItem(CART_STORAGE_KEY);
+    if (!storedItems) {
+      return { items: [] };
+    }
+
+    const parsedItems = JSON.parse(storedItems);
+    return {
+      items: Array.isArray(parsedItems) ? parsedItems : []
+    };
+  } catch {
+    return { items: [] };
+  }
+};
 
 const cartReducer = (state, action) => {
   switch (action.type) {
@@ -42,9 +59,11 @@ const cartReducer = (state, action) => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, {
-    items: []
-  });
+  const [state, dispatch] = useReducer(cartReducer, getInitialCartState());
+
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.items));
+  }, [state.items]);
 
   const addToCart = (item) => {
     dispatch({ type: 'ADD_TO_CART', payload: item });

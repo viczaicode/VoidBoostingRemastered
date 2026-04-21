@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthContext from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
@@ -12,6 +12,22 @@ import PriceSummary from '../components/boosting/PriceSummary';
 import HeroSection from '../components/boosting/HeroSection';
 import BoostingForm from '../components/boosting/BoostingForm';
 import ActionButtons from '../components/boosting/ActionButtons';
+
+const mastersRanks = [
+    'Master 0 LP', 'Master 100 LP', 'Master 200 LP', 'Master 300 LP', 'Master 400 LP',
+    'Grandmaster 0 LP', 'Grandmaster 100 LP', 'Grandmaster 200 LP', 'Grandmaster 300 LP', 'Grandmaster 400 LP',
+    'Challenger 0 LP', 'Challenger 100 LP', 'Challenger 200 LP', 'Challenger 300 LP', 'Challenger 400 LP'
+];
+
+const servers = ['EUW', 'NA', 'KR', 'EUNE', 'BR', 'LAN', 'LAS', 'OCE', 'TR', 'RU', 'JP'];
+
+const speeds = [
+    { name: 'Basic', multiplier: 1, time: '3-5 days per 100 LP' },
+    { name: 'VIP', multiplier: 1.5, time: '2-3 days per 100 LP' },
+    { name: 'VIP+', multiplier: 2, time: '1-2 days per 100 LP' }
+];
+
+const roles = ['Top', 'Jungle', 'Mid', 'ADC', 'Support', 'Fill'];
 
 export default function BoostingAboveMasters() {
     const { user } = useAuthContext();
@@ -47,43 +63,26 @@ export default function BoostingAboveMasters() {
 
     const [totalPrice, setTotalPrice] = useState(0);
 
-    const mastersRanks = [
-        'Master 0 LP', 'Master 100 LP', 'Master 200 LP', 'Master 300 LP', 'Master 400 LP',
-        'Grandmaster 0 LP', 'Grandmaster 100 LP', 'Grandmaster 200 LP', 'Grandmaster 300 LP', 'Grandmaster 400 LP',
-        'Challenger 0 LP', 'Challenger 100 LP', 'Challenger 200 LP', 'Challenger 300 LP', 'Challenger 400 LP'
-    ];
-
-    const servers = ['EUW', 'NA', 'KR', 'EUNE', 'BR', 'LAN', 'LAS', 'OCE', 'TR', 'RU', 'JP'];
-    const speeds = [
-        { name: 'Basic', multiplier: 1, time: '3-5 days per 100 LP' },
-        { name: 'VIP', multiplier: 1.5, time: '2-3 days per 100 LP' },
-        { name: 'VIP+', multiplier: 2, time: '1-2 days per 100 LP' }
-    ];
-    const roles = ['Top', 'Jungle', 'Mid', 'ADC', 'Support', 'Fill'];
-
-    const calculatePrice = () => {
+    useEffect(() => {
         const currentRankIndex = mastersRanks.indexOf(formData.currentRank);
         const desiredRankIndex = mastersRanks.indexOf(formData.desiredRank);
-        
+
         if (currentRankIndex >= desiredRankIndex) {
             setTotalPrice(0);
             return;
         }
 
         const lpToClimb = (desiredRankIndex - currentRankIndex) * 100 + (formData.desiredLP - formData.currentLP);
-        const basePricePer100LP = 50; // Higher price for masters+
+        const basePricePer100LP = 50;
         const speedMultiplier = speeds.find(s => s.name === formData.speed)?.multiplier || 1;
         const championBonus = formData.champions > 3 ? (formData.champions - 3) * 5 : 0;
         const playWithBoosterBonus = formData.playWithBooster ? lpToClimb * 0.3 : 0;
         const streamingBonus = formData.streaming ? lpToClimb * 0.2 : 0;
-        
-        const calculatedPrice = (lpToClimb / 100 * basePricePer100LP * speedMultiplier) + 
-                              championBonus + playWithBoosterBonus + streamingBonus;
-        setTotalPrice(Math.round(calculatedPrice));
-    };
+        const calculatedPrice =
+            (lpToClimb / 100 * basePricePer100LP * speedMultiplier) +
+            championBonus + playWithBoosterBonus + streamingBonus;
 
-    React.useEffect(() => {
-        calculatePrice();
+        setTotalPrice(Math.round(calculatedPrice));
     }, [formData]);
 
     const handleAddToCart = () => {
@@ -99,6 +98,7 @@ export default function BoostingAboveMasters() {
 
         const cartItem = {
             id: uuidv4(),
+            serviceId: 2,
             orderType: 'Above Masters Boosting',
             currentRank: formData.currentRank,
             desiredRank: formData.desiredRank,
@@ -121,7 +121,7 @@ export default function BoostingAboveMasters() {
         navigate('/cart');
     };
 
-    {/*Nested State Handler!!!!! account infóhoz*/}
+    // Nested state handler account infohoz
     const updateAccount = (field, value) => {
     setFormData(prev => ({
         ...prev,

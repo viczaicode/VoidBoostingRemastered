@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
@@ -22,31 +20,33 @@ Route::get('/services/{id}', [ServiceController::class,'show']);
 //BEJELENTKEZETT FELH.
 Route::middleware(['auth:sanctum'])
 ->group(function () {
-    //Route::get('/user', function (Request $request) {
-        //return $request->user();
-    //});
-    // Kijelentkezés útvonal
-    //Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
+    Route::post('/orders', [OrderController::class,'store']);
+    Route::get('/my-orders', [OrderController::class,'myOrders']);
 });
 
 
 //BOOSTER
 Route::middleware(['auth:sanctum', Booster::class])
 ->group(function () {
-    Route::get('/orders', [OrderController::class,'index']);
-    Route::get('/orders/{id}', [OrderController::class,'show']);
+    Route::get('/booster/orders', [OrderController::class,'boosterOrders']);
+    Route::post('/booster/orders/{id}/assign', [OrderController::class,'assignToBooster']);
+    Route::patch('/booster/orders/{id}/status', [OrderController::class,'updateBoosterStatus']);
 });
 
 
 //ADMIN
 Route::middleware(['auth:sanctum', Admin::class])
 ->group(function () {
-    Route::get('/users', [UserController::class, 'index']);
-
-    Route::post('/orders', [OrderController::class,'store']);
-    Route::post('/services', [ServiceController::class,'store']);
-
+    Route::get('/orders', [OrderController::class,'index']);
+    Route::get('/orders/{id}', [OrderController::class,'show']);
+    Route::patch('/orders/{id}', [OrderController::class,'adminUpdate']);
     Route::delete('/orders/{id}', [OrderController::class,'destroy']);
+
+    Route::get('/users', [UserController::class, 'index']);
+    Route::patch('/users/{id}/role', [UserController::class, 'updateRole']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+    Route::post('/services', [ServiceController::class,'store']);
     Route::delete('/services/{id}', [ServiceController::class,'destroy']);
 });
 

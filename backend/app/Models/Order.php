@@ -16,7 +16,13 @@ class Order extends Model
         'rank_from',
         'rank_to',
         'price',
-        'status'
+        'status',
+        'order_details'
+    ];
+
+    protected $casts = [
+        'order_details' => 'array',
+        'price' => 'decimal:2',
     ];
 
     public function buyer()

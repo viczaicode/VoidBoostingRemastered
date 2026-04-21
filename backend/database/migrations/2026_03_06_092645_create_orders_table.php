@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('order_id');
             $table->foreignId('service_id')->constrained('services', 'service_id')->cascadeOnDelete();
             $table->foreignId('buyer_id')->constrained('users', 'user_id')->cascadeOnDelete();
-            $table->foreignId('booster_id')->constrained('users', 'user_id')->cascadeOnDelete()->nullable();
+            $table->foreignId('booster_id')->nullable()->constrained('users', 'user_id')->cascadeOnDelete();
             
             $table->string('rank_from');
             $table->string('rank_to');

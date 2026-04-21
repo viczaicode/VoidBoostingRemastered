@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthContext from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
@@ -13,6 +13,26 @@ import PriceSummary from '../components/boosting/PriceSummary';
 import HeroSection from '../components/boosting/HeroSection';
 import BoostingForm from '../components/boosting/BoostingForm';
 import ActionButtons from '../components/boosting/ActionButtons';
+
+const ranks = [
+    'Iron IV','Iron III','Iron II','Iron I',
+    'Bronze IV','Bronze III','Bronze II','Bronze I',
+    'Silver IV','Silver III','Silver II','Silver I',
+    'Gold IV','Gold III','Gold II','Gold I',
+    'Platinum IV','Platinum III','Platinum II','Platinum I',
+    'Emerald IV','Emerald III','Emerald II','Emerald I',
+    'Diamond IV','Diamond III','Diamond II','Diamond I'
+];
+
+const servers = ['EUW','NA','KR','EUNE','BR','LAN','LAS','OCE','TR','RU','JP'];
+
+const speeds = [
+    { name: 'Basic', multiplier: 1, time: '2-3 days per division' },
+    { name: 'VIP', multiplier: 1.5, time: '1-2 days per division' },
+    { name: 'VIP+', multiplier: 2, time: 'Same day completion' }
+];
+
+const roles = ['Top','Jungle','Mid','ADC','Support','Fill'];
 
 export default function BoostingBelowMasters() {
     const { user } = useAuthContext();
@@ -38,26 +58,6 @@ export default function BoostingBelowMasters() {
 
     const [totalPrice, setTotalPrice] = useState(0);
 
-    const ranks = [
-        'Iron IV','Iron III','Iron II','Iron I',
-        'Bronze IV','Bronze III','Bronze II','Bronze I',
-        'Silver IV','Silver III','Silver II','Silver I',
-        'Gold IV','Gold III','Gold II','Gold I',
-        'Platinum IV','Platinum III','Platinum II','Platinum I',
-        'Emerald IV','Emerald III','Emerald II','Emerald I',
-        'Diamond IV','Diamond III','Diamond II','Diamond I'
-    ];
-
-    const servers = ['EUW','NA','KR','EUNE','BR','LAN','LAS','OCE','TR','RU','JP'];
-
-    const speeds = [
-        { name: 'Basic', multiplier: 1, time: '2-3 days per division' },
-        { name: 'VIP', multiplier: 1.5, time: '1-2 days per division' },
-        { name: 'VIP+', multiplier: 2, time: 'Same day completion' }
-    ];
-
-    const roles = ['Top','Jungle','Mid','ADC','Support','Fill'];
-
     // 🔹 field updater
     const updateField = (field, value) => {
         setFormData(prev => ({
@@ -77,7 +77,7 @@ export default function BoostingBelowMasters() {
         }));
     };
 
-    const calculatePrice = () => {
+    useEffect(() => {
         const currentRankIndex = ranks.indexOf(formData.currentRank);
         const desiredRankIndex = ranks.indexOf(formData.desiredRank);
 
@@ -88,22 +88,12 @@ export default function BoostingBelowMasters() {
 
         const divisionsToClimb = desiredRankIndex - currentRankIndex;
         const basePricePerDivision = 15;
-
-        const speedMultiplier =
-            speeds.find(s => s.name === formData.speed)?.multiplier || 1;
-
-        const championBonus =
-            formData.champions > 3 ? (formData.champions - 3) * 2 : 0;
-
+        const speedMultiplier = speeds.find(s => s.name === formData.speed)?.multiplier || 1;
+        const championBonus = formData.champions > 3 ? (formData.champions - 3) * 2 : 0;
         const calculatedPrice =
-            (divisionsToClimb * basePricePerDivision * speedMultiplier) +
-            championBonus;
+            (divisionsToClimb * basePricePerDivision * speedMultiplier) + championBonus;
 
         setTotalPrice(Math.round(calculatedPrice));
-    };
-
-    React.useEffect(() => {
-        calculatePrice();
     }, [formData]);
 
     const handleAddToCart = () => {
@@ -123,6 +113,7 @@ export default function BoostingBelowMasters() {
 
         const cartItem = {
             id: uuidv4(),
+            serviceId: 1,
             orderType: 'Below Masters Boosting',
             ...formData,
             totalPrice,
