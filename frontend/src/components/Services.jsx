@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ServiceContext } from "../contexts/ServiceContext";
 
 function Services() {
-  const { servicesLista, loading } = useContext(ServiceContext);
+  const { loading } = useContext(ServiceContext);
 
   if (loading) return (
     <div className="loader-center">
@@ -101,47 +101,45 @@ function Services() {
         </div>
       </div>
 
-      {/* Existing Services */}
-      {servicesLista.map((item) => (
-        <div key={item.id} className="service-card">
-          <div className="service-card-header">
-            <div className="service-icon">
-              <img src={item.photo} alt={item.title} />
-            </div>
-            <h3>{item.title}</h3>
+      {/* Coaching Service */}
+      <div className="service-card">
+        <div className="service-card-header">
+          <div className="service-icon">
+            <i className="fas fa-chalkboard-teacher"></i>
           </div>
-          
-          <div className="service-card-body">
-            <p>{item.description}</p>
-            
-            <div className="service-features">
-              <div className="service-feature">
-                <i className="fas fa-check-circle"></i>
-                <span>Fast Completion</span>
-              </div>
-              <div className="service-feature">
-                <i className="fas fa-shield-alt"></i>
-                <span>100% Secure</span>
-              </div>
-              <div className="service-feature">
-                <i className="fas fa-headset"></i>
-                <span>24/7 Support</span>
-              </div>
+          <h3>Coaching Service</h3>
+        </div>
+
+        <div className="service-card-body">
+          <p>1-on-1 coaching sessions with experienced players to improve your macro, mechanics, and decision-making.</p>
+
+          <div className="service-features">
+            <div className="service-feature">
+              <i className="fas fa-video"></i>
+              <span>Live Session Review</span>
             </div>
-          </div>
-          
-          <div className="service-card-footer">
-            <div className="service-price">
-              <span className="price-label">Starting from</span>
-              <span className="price-amount">${Math.floor(Math.random() * 50 + 20)}</span>
+            <div className="service-feature">
+              <i className="fas fa-brain"></i>
+              <span>Personalized Feedback</span>
             </div>
-            <a href="#" className="service-order-btn">
-              <i className="fas fa-shopping-cart"></i>
-              Order Now
-            </a>
+            <div className="service-feature">
+              <i className="fas fa-calendar-alt"></i>
+              <span>Flexible Scheduling</span>
+            </div>
           </div>
         </div>
-      ))}
+
+        <div className="service-card-footer">
+          <div className="service-price">
+            <span className="price-label">Status</span>
+            <span className="price-amount">Coming soon</span>
+          </div>
+          <span className="service-order-btn" aria-disabled="true">
+            <i className="fas fa-hourglass-half"></i>
+            Coming soon
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
