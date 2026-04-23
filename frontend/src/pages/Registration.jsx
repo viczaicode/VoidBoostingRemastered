@@ -12,6 +12,7 @@ export default function Registration() {
     const navigate = useNavigate();
     
     const { loginReg, errors } = useAuthContext();
+    const hasBackendErrors = Object.values(errors || {}).some((value) => Boolean(value));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -114,7 +115,7 @@ export default function Registration() {
                             />
                         </div>
 
-                        {(error || errors ) && (
+                        {(error || hasBackendErrors) && (
                             <div className="error-message">
                                 <i className="fas fa-exclamation-circle"></i>
                                 {error || "An error occurred during registration."}
