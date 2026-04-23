@@ -106,7 +106,7 @@ class OrderController extends Controller
             $order->booster_id = $validated['booster_id'];
         }
 
-        if (!empty($validated['status'])) {
+        if (array_key_exists('status', $validated)) {
             $order->status = $validated['status'];
         }
 

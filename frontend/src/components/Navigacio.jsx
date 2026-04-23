@@ -62,7 +62,11 @@ export default function Navigacio() {
                         <li>
                             <NavLink to="/aboutus" onClick={closeMobileMenu}>About us</NavLink>
                         </li>
-                        
+                        {user?.role === 0 && (
+                            <li>
+                                <NavLink to="/my-orders" onClick={closeMobileMenu}>My Orders</NavLink>
+                            </li>
+                        )}
                         {user?.role >= 1 && (
                             <li>
                                 <NavLink to="/booster-panel" onClick={closeMobileMenu}>Booster Panel</NavLink>
