@@ -17,9 +17,17 @@ export const AuthProvider = ({ children }) => {
   //bejelentkezett felhasználó adatainak lekérdezése
   const getUser = async () => {
     try {
-      const { data } = await myAxios.get("/api/user");
-      setUser(data);
-      return data;
+      const response = await myAxios.get("/api/user", {
+        validateStatus: (status) => status === 200 || status === 401,
+      });
+
+      if (response.status === 401) {
+        setUser(null);
+        return null;
+      }
+
+      setUser(response.data);
+      return response.data;
     } catch (error) {
       setUser(null);
       return null;
@@ -57,6 +65,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    const hasLaravelSession = document.cookie
+      .split("; ")
+      .some((cookie) => cookie.startsWith("laravel_session="));
+
+    if (!hasLaravelSession) {
+      setAuthLoading(false);
+      return;
+    }
+
     getUser().finally(() => setAuthLoading(false));
   }, []);
 

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuthContext from "../contexts/AuthContext";
 
 export default function LogIn() {
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -10,6 +11,7 @@ export default function LogIn() {
     const navigate = useNavigate();
 
     const { loginReg, errors } = useAuthContext("");
+    const hasBackendErrors = Object.values(errors || {}).some((value) => Boolean(value));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -74,7 +76,7 @@ export default function LogIn() {
                             />
                         </div>
 
-                        {(error || errors) && (
+                        {(error || hasBackendErrors) && (
                             <div className="error-message">
                                 <i className="fas fa-exclamation-circle"></i>
                                 {error || "An error occurred during login."}
