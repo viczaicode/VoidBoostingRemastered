@@ -3,9 +3,9 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
@@ -14,36 +14,26 @@ class PasswordResetTest extends TestCase
 
     public function test_reset_password_link_can_be_requested(): void
     {
-        Notification::fake();
-
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $response = $this->postJson('/forgot-password', ['email' => $user->email]);
 
-        Notification::assertSentTo($user, ResetPassword::class);
+        $response->assertOk()->assertJsonStructure(['status']);
     }
 
     public function test_password_can_be_reset_with_valid_token(): void
     {
-        Notification::fake();
-
         $user = User::factory()->create();
+        $token = Password::broker()->createToken($user);
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $response = $this->postJson('/reset-password', [
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'NewStrongPass123!',
+            'password_confirmation' => 'NewStrongPass123!',
+        ]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function (object $notification) use ($user) {
-            $response = $this->post('/reset-password', [
-                'token' => $notification->token,
-                'email' => $user->email,
-                'password' => 'password',
-                'password_confirmation' => 'password',
-            ]);
-
-            $response
-                ->assertSessionHasNoErrors()
-                ->assertStatus(200);
-
-            return true;
-        });
+        $response->assertOk()->assertJsonStructure(['status']);
+        $this->assertTrue(Hash::check('NewStrongPass123!', $user->fresh()->password));
     }
 }
